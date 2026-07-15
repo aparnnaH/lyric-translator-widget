@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LumaLyrics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>LumaLyrics</h1>
+          <p>Real-time lyrics with synced translation.</p>
+        </div>
+        <a class="login-button" href="spotify:">Open Spotify</a>
+      </header>
+
+      <section class="player">
+        <img id="album-art" class="album-art" alt="Album cover">
+        <div class="track-copy">
+          <p class="eyebrow">Currently playing</p>
+          <h2 id="song-title">Start Spotify to begin</h2>
+          <p id="artist-name">Waiting for a track...</p>
+        </div>
+        <details id="player-more-menu" class="player-more-menu">
+          <summary class="player-menu-button" aria-label="More song actions">⋯</summary>
+          <div class="player-menu-panel">
+            <div class="player-menu-header">
+              <p>LumaLyrics</p>
+              <span>Full lyric workspace with synced playback, translation, and local caching.</span>
+            </div>
+            <div class="player-menu-section">
+              <p class="player-menu-label">Preferences</p>
+              <label class="player-menu-control">
+                <span>Translate to</span>
+                <select id="language">
+                  <option value="EN">English</option>
+                  <option value="KO">Korean</option>
+                  <option value="JA">Japanese</option>
+                </select>
+              </label>
+            </div>
+            <div class="player-menu-section">
+              <p class="player-menu-label">Song tools</p>
+              <div id="quality-labels" class="quality-list" aria-label="Quality labels"></div>
+              <div class="player-menu-actions">
+                <a id="open-song" class="player-menu-item" href="#" target="_blank" rel="noreferrer" hidden>Open in Spotify</a>
+                <a id="open-source" class="player-menu-item" href="#" target="_blank" rel="noreferrer" hidden>Open lyrics source</a>
+              </div>
+              <button id="fix-song" class="player-menu-item" type="button" hidden>
+                Reload lyrics for this song
+              </button>
+            </div>
+            <div class="player-menu-section">
+              <p class="player-menu-label">Recent songs</p>
+              <div id="recent-songs" class="recent-list">
+                <span class="recent-empty">Translated songs will appear here.</span>
+              </div>
+            </div>
+            <div class="player-menu-credits">
+              <p>Credits & sources</p>
+              <dl class="player-credit-list">
+                <div>
+                  <dt>Song</dt>
+                  <dd id="credit-song">-</dd>
+                </div>
+                <div>
+                  <dt>Artist</dt>
+                  <dd id="credit-artist">-</dd>
+                </div>
+                <div>
+                  <dt>Playback / artwork</dt>
+                  <dd><a id="credit-playback" href="#" target="_blank" rel="noreferrer" hidden>Open Spotify</a><span id="credit-playback-text">Spotify</span></dd>
+                </div>
+                <div>
+                  <dt>Lyrics</dt>
+                  <dd><a id="credit-lyrics" href="#" target="_blank" rel="noreferrer" hidden>Open source</a><span id="credit-lyrics-text">-</span></dd>
+                </div>
+                <div>
+                  <dt>Translation</dt>
+                  <dd id="credit-translation">-</dd>
+                </div>
+              </dl>
+              <span class="credit-note">Lyrics shown for personal playback companion use. Translation is generated and unofficial.</span>
+            </div>
+            <div class="player-menu-tech">
+              <p>About this app</p>
+              <span>Built as a local-first lyric translator with Spotify Desktop sync, LRCLIB synced lyrics, provider translation, SQLite caching, local language detection, romanized Korean, and repeated-line reuse to reduce translation requests.</span>
+              <div class="player-tech-grid" aria-label="App technologies">
+                <span>Spotify Desktop</span>
+                <span>LRCLIB</span>
+                <span>DeepL/MyMemory</span>
+                <span>SQLite cache</span>
+                <span>Local detection</span>
+                <span>Electron + Flask</span>
+              </div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section id="permission-helper" class="permission-helper" hidden>
+        <p>Spotify permission needed</p>
+        <span>Allow LumaLyrics to control Spotify in System Settings &gt; Privacy &amp; Security &gt; Automation.</span>
+      </section>
+
+      <section id="setup-helper" class="setup-helper" hidden>
+        <div>
+          <p class="setup-title">Set up Spotify sync</p>
+          <span class="setup-copy">Complete these once, then this panel disappears.</span>
+        </div>
+        <div class="setup-list" aria-label="Spotify setup checklist">
+          <span id="setup-open">Open Spotify</span>
+          <span id="setup-permission">Allow Automation permission</span>
+          <span id="setup-play">Play a song</span>
+        </div>
+      </section>
+
+      <div class="status-row">
+        <p id="status" class="status">{{ initial_error or "Ready." }}</p>
+        <span id="translation-label" class="translation-label" hidden></span>
+      </div>
+
+      <section id="empty-state" class="empty-state" hidden>
+        <div class="empty-art" aria-hidden="true">♪</div>
+        <p class="empty-title">Play a song in Spotify</p>
+        <p class="empty-copy">Synced lyrics, translation, and language detection will appear here.</p>
+        <a class="empty-button" href="spotify:">Open Spotify</a>
+      </section>
+
+      <section id="song-info" class="song-info" hidden>
+        <div>
+          <p class="eyebrow">Song info</p>
+          <p id="song-about"></p>
+        </div>
+        <a id="song-source" href="#" target="_blank" rel="noreferrer">Open source</a>
+      </section>
+
+      <section id="karaoke-controls" class="karaoke-controls">
+        <label class="toggle-control">
+          <input id="karaoke-toggle" type="checkbox" checked>
+          Karaoke
+        </label>
+        <label class="duration-control">
+          Duration
+          <input id="karaoke-duration" type="number" min="30" max="600" step="5" value="210">
+        </label>
+        <span id="karaoke-source" class="karaoke-source">Estimated timing</span>
+        <span id="lyrics-source" class="lyrics-source" hidden>Lyrics source</span>
+        <div class="media-progress-group">
+          <button id="play-toggle" class="play-toggle-button" type="button" aria-label="Play Spotify playback" disabled>▶</button>
+          <span id="song-elapsed" class="song-time">0:00</span>
+          <input id="karaoke-progress" type="range" min="0" max="1000" value="0">
+          <span id="song-duration" class="song-time">0:00</span>
+        </div>
+        <button id="karaoke-reset" type="button">Reset</button>
+      </section>
+
+      <section id="lyrics-grid" class="lyrics-grid">
+        <div class="lyrics-panel">
+          <h3>Original</h3>
+          <div id="original-lyrics" class="lyrics-lines"></div>
+        </div>
+        <div class="lyrics-panel">
+          <h3>Translated</h3>
+          <div id="translated-lyrics" class="lyrics-lines"></div>
+        </div>
+      </section>
+
+      <aside id="preparing-overlay" class="preparing-overlay" hidden>
+        <div class="preparing-card">
+          <img id="preparing-art" class="preparing-art" alt="">
+          <div>
+            <p class="preparing-title">Preparing lyrics</p>
+            <p class="preparing-copy">Syncing translation before playback resumes.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

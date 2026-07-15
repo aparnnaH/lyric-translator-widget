@@ -1,0 +1,40 @@
+{
+  "name": "lyric-translator-widget",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LumaLyrics desktop lyric widget for local Spotify playback and LRCLIB synced translations.",
+  "main": "desktop/main.js",
+  "scripts": {
+    "desktop": "env -u ELECTRON_RUN_AS_NODE electron .",
+    "desktop:dev": "env -u ELECTRON_RUN_AS_NODE electron .",
+    "desktop:package": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^43.1.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.local.lumalyrics",
+    "productName": "LumaLyrics",
+    "asar": false,
+    "files": [
+      ".venv/**/*",
+      "app.py",
+      "requirements.txt",
+      "services/**/*",
+      "static/**/*",
+      "templates/**/*",
+      "desktop/**/*",
+      "build/icon.png",
+      "build/icon.icns",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "desktop/main.js"
+    },
+    "mac": {
+      "icon": "build/icon.icns",
+      "category": "public.app-category.music"
+    }
+  }
+}

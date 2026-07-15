@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LumaLyrics Focus</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='focus.css') }}">
+  </head>
+  <body>
+    <main class="focus-shell">
+      <header class="focus-topbar">
+        <div class="focus-track">
+          <img id="focus-art" class="focus-art" alt="Album cover">
+          <div class="focus-track-copy">
+            <p id="focus-title" class="focus-title">Open Spotify</p>
+            <p id="focus-artist" class="focus-artist">Waiting for playback</p>
+          </div>
+        </div>
+        <div class="focus-controls">
+          <span id="focus-translation" class="focus-badge focus-badge-accent">-</span>
+          <details id="focus-more-menu" class="focus-more-menu">
+            <summary class="focus-menu-button" aria-label="More song actions">⋯</summary>
+            <div class="focus-menu-panel">
+              <div class="focus-menu-header">
+                <p>LumaLyrics Focus</p>
+                <span>Full-screen lyric view powered by synced playback and cached translation.</span>
+              </div>
+              <div class="focus-menu-section">
+                <p class="focus-menu-label">Preferences</p>
+                <label class="focus-menu-control">
+                  <span>Translate to</span>
+                  <select id="focus-language">
+                    <option value="EN">English</option>
+                    <option value="KO">Korean</option>
+                    <option value="JA">Japanese</option>
+                  </select>
+                </label>
+                <label class="focus-menu-check">
+                  <input id="focus-romanization-toggle" type="checkbox" checked>
+                  <span>Romanized Korean</span>
+                </label>
+              </div>
+              <div class="focus-menu-section">
+                <p class="focus-menu-label">Song status</p>
+                <div class="focus-menu-meta">
+                  <span id="focus-sync" class="focus-badge">Ready</span>
+                  <span id="focus-source" class="focus-badge focus-badge-source" hidden>-</span>
+                </div>
+                <div id="focus-quality" class="focus-quality-list" aria-label="Quality labels"></div>
+                <div class="focus-menu-actions">
+                  <a id="focus-open-song" class="focus-menu-item" href="#" target="_blank" rel="noreferrer" hidden>Open in Spotify</a>
+                  <a id="focus-open-source" class="focus-menu-item" href="#" target="_blank" rel="noreferrer" hidden>Open lyrics source</a>
+                </div>
+                <button id="focus-reload" class="focus-menu-item" type="button" hidden>
+                  Reload lyrics for this song
+                </button>
+              </div>
+              <div class="focus-menu-section">
+                <p class="focus-menu-label">Recent songs</p>
+                <div id="focus-recent-songs" class="focus-recent-list">
+                  <span class="focus-recent-empty">Translated songs will appear here.</span>
+                </div>
+              </div>
+              <div class="focus-menu-credits">
+                <p>Credits & sources</p>
+                <dl class="focus-credit-list">
+                  <div>
+                    <dt>Song</dt>
+                    <dd id="focus-credit-song">-</dd>
+                  </div>
+                  <div>
+                    <dt>Artist</dt>
+                    <dd id="focus-credit-artist">-</dd>
+                  </div>
+                  <div>
+                    <dt>Playback / artwork</dt>
+                    <dd><a id="focus-credit-playback" href="#" target="_blank" rel="noreferrer" hidden>Open Spotify</a><span id="focus-credit-playback-text">Spotify</span></dd>
+                  </div>
+                  <div>
+                    <dt>Lyrics</dt>
+                    <dd><a id="focus-credit-lyrics" href="#" target="_blank" rel="noreferrer" hidden>Open source</a><span id="focus-credit-lyrics-text">-</span></dd>
+                  </div>
+                  <div>
+                    <dt>Translation</dt>
+                    <dd id="focus-credit-translation">-</dd>
+                  </div>
+                </dl>
+                <span class="focus-credit-note">Lyrics shown for personal playback companion use. Translation is generated and unofficial.</span>
+              </div>
+              <div class="focus-menu-tech">
+                <p>About this app</p>
+                <span>Built as a desktop lyric companion with Spotify Desktop sync, LRCLIB synced lyrics, provider translation, SQLite caching, local language detection, romanized Korean, and repeated-line reuse to reduce translation requests.</span>
+                <div class="focus-tech-grid" aria-label="App technologies">
+                  <span>Spotify Desktop</span>
+                  <span>LRCLIB</span>
+                  <span>DeepL/MyMemory</span>
+                  <span>SQLite cache</span>
+                  <span>Local detection</span>
+                  <span>Electron + Flask</span>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </header>
+
+      <section id="focus-permission" class="focus-permission" hidden>
+        <p>Spotify permission needed</p>
+        <span>Allow LumaLyrics to control Spotify in System Settings &gt; Privacy &amp; Security &gt; Automation.</span>
+      </section>
+
+      <section id="focus-setup" class="focus-setup" hidden>
+        <p class="focus-setup-title">Set up Spotify sync</p>
+        <div class="focus-setup-list" aria-label="Spotify setup checklist">
+          <span id="focus-setup-open">Open Spotify</span>
+          <span id="focus-setup-permission">Allow Automation permission</span>
+          <span id="focus-setup-play">Play a song</span>
+        </div>
+      </section>
+
+      <section id="focus-empty" class="focus-empty" hidden>
+        <div class="focus-empty-art" aria-hidden="true">♪</div>
+        <p class="focus-empty-title">Play a song in Spotify</p>
+        <p class="focus-empty-copy">Focus mode will sync lyrics and translation when playback starts.</p>
+        <a class="focus-empty-button" href="spotify:">Open Spotify</a>
+      </section>
+
+      <section id="focus-lyrics" class="focus-lyrics" aria-live="polite">
+        <p id="focus-prev" class="focus-side-line"></p>
+        <article class="focus-current">
+          <p id="focus-original" class="focus-original">-</p>
+          <p id="focus-romanized" class="focus-romanized" hidden></p>
+          <p id="focus-translated" class="focus-translated">-</p>
+        </article>
+        <p id="focus-next" class="focus-side-line"></p>
+      </section>
+
+      <footer class="focus-footer">
+        <span id="focus-status" class="focus-status">Ready</span>
+        <a href="/widget" class="focus-link">Widget</a>
+      </footer>
+
+      <section class="focus-media-bar" aria-label="Playback controls">
+        <button id="focus-play-toggle" class="focus-play-toggle" type="button" aria-label="Play Spotify playback" disabled>
+          ▶
+        </button>
+        <div class="focus-progress-row">
+          <span id="focus-elapsed" class="focus-time">0:00</span>
+          <div class="mini-progress" aria-hidden="true">
+            <span id="focus-progress-fill"></span>
+          </div>
+          <span id="focus-duration" class="focus-time">0:00</span>
+        </div>
+      </section>
+
+      <aside id="focus-preparing" class="preparing-overlay" hidden>
+        <div class="preparing-card">
+          <img id="focus-preparing-art" class="preparing-art" alt="">
+          <div>
+            <p class="preparing-title">Preparing lyrics</p>
+            <p class="preparing-copy">Syncing translation before playback resumes.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="{{ url_for('static', filename='focus.js') }}"></script>
+  </body>
+</html>

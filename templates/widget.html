@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LumaLyrics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='widget.css') }}">
+  </head>
+  <body>
+    <main class="widget-shell">
+      <header class="widget-player">
+        <img id="widget-art" class="widget-art" alt="Album cover">
+        <div class="widget-track">
+          <p id="widget-title" class="widget-title">Open Spotify</p>
+          <p id="widget-artist" class="widget-artist">Waiting for playback</p>
+        </div>
+        <div class="widget-actions">
+          <details id="widget-more-menu" class="widget-more-menu">
+            <summary class="widget-menu-button" aria-label="More song actions">⋯</summary>
+            <div class="widget-menu-panel">
+              <div class="widget-menu-header">
+                <p>LumaLyrics</p>
+                <span>Spotify companion for synced lyrics, translation, and local caching.</span>
+              </div>
+              <div class="widget-menu-section">
+                <p class="widget-menu-label">Preferences</p>
+                <label class="widget-menu-control">
+                  <span>Translate to</span>
+                  <select id="widget-language">
+                    <option value="EN">English</option>
+                    <option value="KO">Korean</option>
+                    <option value="JA">Japanese</option>
+                  </select>
+                </label>
+                <label class="widget-menu-check">
+                  <input id="widget-romanization-toggle" type="checkbox" checked>
+                  <span>Romanized Korean</span>
+                </label>
+              </div>
+              <div class="widget-menu-section">
+                <p class="widget-menu-label">Song status</p>
+                <div class="widget-menu-meta">
+                  <span id="widget-sync" class="widget-sync">-</span>
+                  <span id="widget-source" class="widget-source" hidden>-</span>
+                </div>
+                <div id="widget-quality" class="widget-quality-list" aria-label="Quality labels"></div>
+                <div class="widget-menu-actions">
+                  <a id="widget-open-song" class="widget-menu-item" href="#" target="_blank" rel="noreferrer" hidden>Open in Spotify</a>
+                  <a id="widget-open-source" class="widget-menu-item" href="#" target="_blank" rel="noreferrer" hidden>Open lyrics source</a>
+                </div>
+                <button id="widget-reload" class="widget-menu-item" type="button" hidden>
+                  Reload lyrics for this song
+                </button>
+              </div>
+              <div class="widget-menu-section">
+                <p class="widget-menu-label">Recent songs</p>
+                <div id="widget-recent-songs" class="widget-recent-list">
+                  <span class="widget-recent-empty">Translated songs will appear here.</span>
+                </div>
+              </div>
+              <div class="widget-menu-credits">
+                <p>Credits & sources</p>
+                <dl class="widget-credit-list">
+                  <div>
+                    <dt>Song</dt>
+                    <dd id="widget-credit-song">-</dd>
+                  </div>
+                  <div>
+                    <dt>Artist</dt>
+                    <dd id="widget-credit-artist">-</dd>
+                  </div>
+                  <div>
+                    <dt>Playback / artwork</dt>
+                    <dd><a id="widget-credit-playback" href="#" target="_blank" rel="noreferrer" hidden>Open Spotify</a><span id="widget-credit-playback-text">Spotify</span></dd>
+                  </div>
+                  <div>
+                    <dt>Lyrics</dt>
+                    <dd><a id="widget-credit-lyrics" href="#" target="_blank" rel="noreferrer" hidden>Open source</a><span id="widget-credit-lyrics-text">-</span></dd>
+                  </div>
+                  <div>
+                    <dt>Translation</dt>
+                    <dd id="widget-credit-translation">-</dd>
+                  </div>
+                </dl>
+                <span class="widget-credit-note">Lyrics shown for personal playback companion use. Translation is generated and unofficial.</span>
+              </div>
+              <div class="widget-menu-tech">
+                <p>About this app</p>
+                <span>Built as a compact desktop lyric companion with Spotify Desktop sync, LRCLIB synced lyrics, provider translation, SQLite caching, local language detection, romanized Korean, and repeated-line reuse to reduce translation requests.</span>
+                <div class="widget-tech-grid" aria-label="App technologies">
+                  <span>Spotify Desktop</span>
+                  <span>LRCLIB</span>
+                  <span>DeepL/MyMemory</span>
+                  <span>SQLite cache</span>
+                  <span>Local detection</span>
+                  <span>Electron + Flask</span>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </header>
+
+      <section id="widget-permission" class="widget-permission" hidden>
+        <p>Spotify permission needed</p>
+        <span>Allow LumaLyrics to control Spotify in System Settings &gt; Privacy &amp; Security &gt; Automation.</span>
+      </section>
+
+      <section id="widget-setup" class="widget-setup" hidden>
+        <p class="widget-setup-title">Set up Spotify sync</p>
+        <div class="widget-setup-list" aria-label="Spotify setup checklist">
+          <span id="widget-setup-open">Open Spotify</span>
+          <span id="widget-setup-permission">Allow Automation permission</span>
+          <span id="widget-setup-play">Play a song</span>
+        </div>
+      </section>
+
+      <section id="widget-empty" class="widget-empty" hidden>
+        <div class="widget-empty-art" aria-hidden="true">♪</div>
+        <p class="widget-empty-title">Play a song in Spotify</p>
+        <p class="widget-empty-copy">Lyrics and translation will appear here automatically.</p>
+        <a class="widget-empty-button" href="spotify:">Open Spotify</a>
+      </section>
+
+      <section id="widget-lyrics" class="widget-lyrics" aria-live="polite">
+        <p id="widget-prev" class="widget-side-line"></p>
+        <article class="widget-current">
+          <p id="widget-original" class="widget-original">-</p>
+          <p id="widget-romanized" class="widget-romanized" hidden></p>
+          <p id="widget-translated" class="widget-translated">-</p>
+        </article>
+        <p id="widget-next" class="widget-side-line"></p>
+      </section>
+
+      <footer class="widget-footer">
+        <span id="widget-status" class="widget-status">Ready</span>
+        <span id="widget-translation" class="widget-translation">-</span>
+      </footer>
+
+      <section class="widget-media-bar" aria-label="Playback controls">
+        <button id="widget-play-toggle" class="widget-play-toggle" type="button" aria-label="Play Spotify playback" disabled>
+          ▶
+        </button>
+        <div class="widget-progress-row">
+          <span id="widget-elapsed" class="widget-time">0:00</span>
+          <div class="mini-progress" aria-hidden="true">
+            <span id="widget-progress-fill"></span>
+          </div>
+          <span id="widget-duration" class="widget-time">0:00</span>
+        </div>
+      </section>
+
+      <aside id="widget-preparing" class="preparing-overlay" hidden>
+        <div class="preparing-card">
+          <img id="widget-preparing-art" class="preparing-art" alt="">
+          <div>
+            <p class="preparing-title">Preparing lyrics</p>
+            <p class="preparing-copy">Syncing translation before playback resumes.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="{{ url_for('static', filename='widget.js') }}"></script>
+  </body>
+</html>
