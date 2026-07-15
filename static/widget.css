@@ -59,6 +59,18 @@ body.has-album-background::before {
   opacity: 0.96;
 }
 
+body.low-power::before {
+  filter: blur(20px) saturate(1.05);
+  opacity: 0.36;
+  transition: none;
+}
+
+body.low-power::after {
+  background:
+    linear-gradient(180deg, rgba(5, 6, 7, 0.42), rgba(5, 6, 7, 0.72) 52%, rgba(4, 4, 4, 0.94)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.36), transparent 40%, rgba(0, 0, 0, 0.4));
+}
+
 p {
   margin: 0;
 }
@@ -123,6 +135,13 @@ input,
 body.has-album-background .widget-shell::before {
   opacity: 0.13;
   transform: scale(1.04);
+}
+
+body.low-power .widget-shell::before {
+  opacity: 0;
+  filter: none;
+  box-shadow: none;
+  transition: none;
 }
 
 .widget-player {
@@ -849,6 +868,24 @@ body.has-album-background .widget-shell::before {
   transition: width 240ms linear;
 }
 
+body.low-power .widget-art,
+body.low-power .widget-media-bar,
+body.low-power .widget-menu-panel,
+body.low-power .preparing-card {
+  box-shadow: none;
+}
+
+body.low-power .widget-media-bar,
+body.low-power .widget-menu-panel,
+body.low-power .preparing-overlay,
+body.low-power .preparing-card {
+  backdrop-filter: none;
+}
+
+body.low-power .mini-progress span {
+  transition-duration: 500ms;
+}
+
 .preparing-overlay {
   display: grid;
   place-items: center;
@@ -907,6 +944,11 @@ body.has-album-background .widget-shell::before {
   display: inline-block;
   width: 1.1em;
   animation: preparing-pulse 1s ease-in-out infinite;
+}
+
+body.low-power .preparing-title::after {
+  animation: none;
+  opacity: 0.55;
 }
 
 @keyframes preparing-pulse {

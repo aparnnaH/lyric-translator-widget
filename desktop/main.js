@@ -61,10 +61,22 @@ async function fitWidgetWindowToContent() {
       maxHeight,
       Math.max(WIDGET_MIN_HEIGHT, (Number(contentHeight) || WIDGET_DEFAULT_HEIGHT) + WIDGET_HEIGHT_PADDING),
     );
-    const [currentWidth, currentHeight] = mainWindow.getContentSize();
+    const currentBounds = mainWindow.getBounds();
+    const nextWidth = Math.max(currentBounds.width, WIDGET_WIDTH);
+    logStartup(`Fit widget height: content=${contentHeight}, next=${nextHeight}, current=${currentBounds.height}`);
 
-    if (Math.abs(currentHeight - nextHeight) > 8 || currentWidth < WIDGET_WIDTH) {
-      mainWindow.setContentSize(Math.max(currentWidth, WIDGET_WIDTH), nextHeight, true);
+    if (Math.abs(currentBounds.height - nextHeight) > 8 || currentBounds.width < WIDGET_WIDTH) {
+      mainWindow.setResizable(true);
+      mainWindow.setBounds(
+        {
+          x: currentBounds.x,
+          y: currentBounds.y,
+          width: nextWidth,
+          height: nextHeight,
+        },
+        true,
+      );
+      mainWindow.setResizable(false);
     }
   } catch (error) {
     logStartup(`Could not fit widget window: ${error.message}`);

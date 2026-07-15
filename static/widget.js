@@ -16,6 +16,7 @@ const sourceEl = document.querySelector("#widget-source");
 const preparingEl = document.querySelector("#widget-preparing");
 const preparingArtEl = document.querySelector("#widget-preparing-art");
 const romanizationToggleEl = document.querySelector("#widget-romanization-toggle");
+const lowPowerToggleEl = document.querySelector("#widget-low-power-toggle");
 const progressFillEl = document.querySelector("#widget-progress-fill");
 const elapsedTimeEl = document.querySelector("#widget-elapsed");
 const durationTimeEl = document.querySelector("#widget-duration");
@@ -48,8 +49,14 @@ let estimatedStartedAt = 0;
 let isLoading = false;
 let activeLyricIndex = 0;
 let showRomanization = localStorage.getItem("lyric-widget-romanization") !== "off";
+let lowPowerMode = localStorage.getItem("lyric-widget-low-power") === "on";
+let playbackTimer = null;
+let lyricTimer = null;
+let setupTimer = null;
 
 romanizationToggleEl.checked = showRomanization;
+lowPowerToggleEl.checked = lowPowerMode;
+document.body.classList.toggle("low-power", lowPowerMode);
 
 function setStatus(message) {
   statusEl.textContent = message;
@@ -248,6 +255,24 @@ function setShowRomanization(value) {
   renderLyricAt(activeLyricIndex);
 }
 
+function configureTimers() {
+  clearInterval(playbackTimer);
+  clearInterval(lyricTimer);
+  clearInterval(setupTimer);
+
+  playbackTimer = setInterval(refreshPlayback, lowPowerMode ? 2000 : 1000);
+  lyricTimer = setInterval(updateCurrentLyric, lowPowerMode ? 500 : 250);
+  setupTimer = setInterval(refreshSetupStatus, lowPowerMode ? 8000 : 5000);
+}
+
+function setLowPowerMode(value) {
+  lowPowerMode = Boolean(value);
+  localStorage.setItem("lyric-widget-low-power", lowPowerMode ? "on" : "off");
+  document.body.classList.toggle("low-power", lowPowerMode);
+  configureTimers();
+  updateCurrentLyric();
+}
+
 function getTrackId(track) {
   return track?.id || `${track?.artist || ""}-${track?.title || ""}`;
 }
@@ -434,6 +459,8 @@ function renderLyricAt(index) {
 }
 
 function updateCurrentLyric() {
+  if (lowPowerMode && document.hidden) return;
+
   const displayPairs = getDisplayPairs(lyricPairs);
   const liveElapsed = getLiveElapsedMs();
 
@@ -590,6 +617,7 @@ async function loadLyrics(force = false) {
 }
 
 async function refreshPlayback() {
+  if (lowPowerMode && document.hidden) return;
   if (isLoading) return;
 
   try {
@@ -629,6 +657,10 @@ romanizationToggleEl.addEventListener("change", () => {
   setShowRomanization(romanizationToggleEl.checked);
 });
 
+lowPowerToggleEl.addEventListener("change", () => {
+  setLowPowerMode(lowPowerToggleEl.checked);
+});
+
 reloadEl.addEventListener("click", () => {
   reloadEl.closest("details")?.removeAttribute("open");
   loadLyrics(true);
@@ -643,9 +675,14 @@ recentSongsEl.addEventListener("click", (event) => {
   if (button) playRecentSong(button.dataset.trackId);
 });
 
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    refreshPlayback();
+    updateCurrentLyric();
+  }
+});
+
 loadLyrics();
 loadRecentSongs();
 refreshSetupStatus();
-setInterval(refreshPlayback, 1000);
-setInterval(updateCurrentLyric, 250);
-setInterval(refreshSetupStatus, 5000);
+configureTimers();
