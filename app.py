@@ -188,6 +188,17 @@ def setup_status():
     return jsonify(local_spotify.get_setup_status())
 
 
+@app.route("/open-spotify", methods=["POST"])
+def open_spotify():
+    """Open Spotify Desktop only when it is not already running."""
+    try:
+        return jsonify(local_spotify.open_if_needed())
+    except LocalSpotifyError as exc:
+        return json_error(str(exc), 400)
+    except Exception:
+        return json_error("Could not open Spotify.", 502)
+
+
 @app.route("/playback-toggle", methods=["POST"])
 def playback_toggle():
     """Toggle local Spotify desktop playback and return the updated track state."""

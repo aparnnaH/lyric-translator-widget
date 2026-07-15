@@ -80,6 +80,28 @@ class LocalSpotifyClient:
             return False
         return result.returncode == 0
 
+    def open_if_needed(self):
+        """Open Spotify Desktop only when it is not already running."""
+        if self._is_spotify_running():
+            return {"spotify_running": True, "opened": False}
+
+        try:
+            result = subprocess.run(
+                ["open", "-a", "Spotify"],
+                capture_output=True,
+                check=False,
+                text=True,
+                timeout=3,
+            )
+        except (subprocess.SubprocessError, OSError) as exc:
+            raise LocalSpotifyError("Could not open the Spotify desktop app.") from exc
+
+        if result.returncode != 0:
+            message = result.stderr.strip() or "Spotify could not be opened."
+            raise LocalSpotifyError(message)
+
+        return {"spotify_running": False, "opened": True}
+
     def _run_script(self):
         if not self._is_spotify_running():
             return "NOT_RUNNING"

@@ -38,6 +38,7 @@ const qualityEl = document.querySelector("#widget-quality");
 const openSongEl = document.querySelector("#widget-open-song");
 const openSourceEl = document.querySelector("#widget-open-source");
 const recentSongsEl = document.querySelector("#widget-recent-songs");
+const openSpotifyEls = document.querySelectorAll("[data-open-spotify]");
 
 let lastTrackId = "";
 let lyricPairs = [];
@@ -512,6 +513,17 @@ async function refreshSetupStatus() {
   }
 }
 
+async function openSpotify() {
+  try {
+    const result = await fetchJson("/open-spotify", { method: "POST" });
+    setStatus(result.opened ? "Opening Spotify" : "Spotify is already open");
+    setTimeout(refreshSetupStatus, 900);
+    setTimeout(refreshPlayback, 1400);
+  } catch (error) {
+    setStatus(error.message);
+  }
+}
+
 async function playRecentSong(trackId) {
   if (!trackId) return;
   try {
@@ -635,6 +647,12 @@ reloadEl.addEventListener("click", () => {
 });
 
 playToggleEl.addEventListener("click", togglePlayback);
+openSpotifyEls.forEach((element) => {
+  element.addEventListener("click", (event) => {
+    event.preventDefault();
+    openSpotify();
+  });
+});
 moreMenuEl.addEventListener("toggle", () => {
   if (moreMenuEl.open) loadRecentSongs();
 });
