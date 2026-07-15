@@ -11,6 +11,7 @@
 
 body {
   display: grid;
+  place-items: start center;
   min-height: 100vh;
   margin: 0;
   overflow: hidden;
@@ -57,12 +58,12 @@ p {
 
 .widget-shell {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
-  gap: 16px;
+  grid-template-rows: auto auto auto auto;
+  gap: 14px;
   width: min(100vw, 430px);
-  min-height: min(100vh, 620px);
+  min-height: 0;
   margin: auto;
-  padding: 18px;
+  padding: 16px 18px 18px;
   position: relative;
   isolation: isolate;
   z-index: 1;
@@ -351,14 +352,14 @@ body.has-album-background .widget-shell::before {
 }
 
 .widget-quality-list span {
-  min-height: 22px;
-  border: 1px solid rgba(244, 200, 108, 0.16);
+  min-height: 20px;
+  border: 1px solid rgba(247, 242, 234, 0.08);
   border-radius: 999px;
-  padding: 4px 7px;
-  background: rgba(244, 200, 108, 0.07);
-  color: rgba(255, 250, 240, 0.72);
-  font-size: 0.62rem;
-  font-weight: 860;
+  padding: 3px 7px;
+  background: rgba(12, 14, 16, 0.14);
+  color: rgba(255, 250, 240, 0.52);
+  font-size: 0.6rem;
+  font-weight: 780;
   line-height: 1;
 }
 
@@ -629,7 +630,7 @@ body.has-album-background .widget-shell::before {
   align-content: center;
   justify-items: center;
   gap: 9px;
-  min-height: 374px;
+  min-height: 300px;
   text-align: center;
 }
 
@@ -702,8 +703,8 @@ body.has-album-background .widget-shell::before {
   grid-template-rows: minmax(32px, auto) 1fr minmax(32px, auto);
   align-items: center;
   justify-items: center;
-  min-height: 374px;
-  gap: 14px;
+  min-height: 300px;
+  gap: 12px;
   text-align: center;
 }
 
@@ -714,8 +715,8 @@ body.has-album-background .widget-shell::before {
   gap: 12px;
   width: 100%;
   max-width: 360px;
-  min-height: 250px;
-  padding: 22px 0 26px;
+  min-height: 194px;
+  padding: 12px 0 16px;
 }
 
 .widget-original,
@@ -782,12 +783,12 @@ body.has-album-background .widget-shell::before {
 .widget-translation,
 .widget-sync,
 .widget-source {
-  min-height: 23px;
+  min-height: 21px;
   overflow: hidden;
   border: 1px solid rgba(247, 242, 234, 0.1);
   border-radius: 999px;
-  padding: 4px 8px;
-  background: rgba(12, 14, 16, 0.2);
+  padding: 3px 7px;
+  background: rgba(12, 14, 16, 0.16);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -808,7 +809,11 @@ body.has-album-background .widget-shell::before {
 
 .widget-sync {
   flex: 0 0 auto;
-  color: #f4c86c;
+  border-color: rgba(247, 242, 234, 0.08);
+  background: rgba(12, 14, 16, 0.12);
+  color: rgba(247, 242, 234, 0.48);
+  font-size: 0.68rem;
+  font-weight: 760;
 }
 
 .mini-progress {

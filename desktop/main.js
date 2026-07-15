@@ -13,11 +13,13 @@ const BASE_PORT = Number(process.env.LYRIC_WIDGET_PORT || "5001");
 
 let flaskProcess = null;
 let mainWindow = null;
+let fitTimer = null;
 let activePort = BASE_PORT;
 const WIDGET_WIDTH = 430;
-const WIDGET_DEFAULT_HEIGHT = 760;
+const WIDGET_DEFAULT_HEIGHT = 620;
 const WIDGET_MIN_WIDTH = 360;
-const WIDGET_MIN_HEIGHT = 700;
+const WIDGET_MIN_HEIGHT = 540;
+const WIDGET_HEIGHT_PADDING = 8;
 
 function logStartup(message) {
   try {
@@ -44,7 +46,7 @@ async function fitWidgetWindowToContent() {
     const maxHeight = Math.max(WIDGET_MIN_HEIGHT, display.workArea.height - 56);
     const nextHeight = Math.min(
       maxHeight,
-      Math.max(WIDGET_DEFAULT_HEIGHT, Number(contentHeight) || WIDGET_DEFAULT_HEIGHT),
+      Math.max(WIDGET_MIN_HEIGHT, (Number(contentHeight) || WIDGET_DEFAULT_HEIGHT) + WIDGET_HEIGHT_PADDING),
     );
     const [currentWidth, currentHeight] = mainWindow.getContentSize();
 
@@ -248,6 +250,23 @@ function createWindow() {
     fitWidgetWindowToContent();
     setTimeout(fitWidgetWindowToContent, 700);
     setTimeout(fitWidgetWindowToContent, 1800);
+    setTimeout(fitWidgetWindowToContent, 3600);
+    if (fitTimer) {
+      clearInterval(fitTimer);
+    }
+    fitTimer = setInterval(fitWidgetWindowToContent, 1200);
+    setTimeout(() => {
+      if (fitTimer) {
+        clearInterval(fitTimer);
+        fitTimer = null;
+      }
+    }, 12000);
+  });
+  mainWindow.on("closed", () => {
+    if (fitTimer) {
+      clearInterval(fitTimer);
+      fitTimer = null;
+    }
   });
   mainWindow.once("ready-to-show", () => {
     fitWidgetWindowToContent();
