@@ -250,7 +250,13 @@ function createWindow() {
     title: APP_NAME,
     icon: ICON_PATH,
     alwaysOnTop: true,
-    backgroundColor: "#101010",
+    titleBarStyle: "customButtonsOnHover",
+    trafficLightPosition: { x: 14, y: 12 },
+    transparent: true,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    backgroundColor: "#00000000",
     show: false,
     webPreferences: {
       contextIsolation: true,
@@ -290,8 +296,11 @@ function createWindow() {
 app.whenReady().then(async () => {
   try {
     app.setName(APP_NAME);
-    if (process.platform === "darwin" && app.dock && fs.existsSync(ICON_PATH)) {
-      app.dock.setIcon(ICON_PATH);
+    if (process.platform === "darwin" && app.dock) {
+      if (fs.existsSync(ICON_PATH)) {
+        app.dock.setIcon(ICON_PATH);
+      }
+      app.dock.hide();
     }
     createMenu();
     await startFlaskIfNeeded();
@@ -311,9 +320,7 @@ app.whenReady().then(async () => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  app.quit();
 });
 
 app.on("before-quit", () => {
