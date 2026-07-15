@@ -12,7 +12,7 @@
 body {
   display: grid;
   place-items: start center;
-  min-height: 100vh;
+  min-height: 0;
   margin: 0;
   overflow: hidden;
   position: relative;
@@ -62,7 +62,7 @@ p {
   gap: 14px;
   width: min(100vw, 430px);
   min-height: 0;
-  margin: auto;
+  margin: 0 auto;
   padding: 16px 18px 18px;
   position: relative;
   isolation: isolate;
@@ -681,21 +681,6 @@ body.has-album-background .widget-shell::before {
   font-size: 0.84rem;
   font-weight: 660;
   line-height: 1.4;
-}
-
-.widget-empty-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 34px;
-  border: 1px solid rgba(158, 230, 215, 0.26);
-  border-radius: 999px;
-  padding: 0 14px;
-  background: rgba(158, 230, 215, 0.14);
-  color: #fffaf0;
-  font-size: 0.78rem;
-  font-weight: 900;
-  text-decoration: none;
 }
 
 .widget-lyrics {

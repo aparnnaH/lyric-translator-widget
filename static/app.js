@@ -41,7 +41,6 @@ const qualityEl = document.querySelector("#quality-labels");
 const openSongEl = document.querySelector("#open-song");
 const openSourceEl = document.querySelector("#open-source");
 const recentSongsEl = document.querySelector("#recent-songs");
-const openSpotifyEls = document.querySelectorAll("[data-open-spotify]");
 
 let lastTrackId = "";
 let lastLanguage = "";
@@ -148,7 +147,7 @@ function setActionLink(linkEl, url, text) {
 }
 
 function playbackCreditLabel(track) {
-  if (track?.playback_source === "spotify-local") return "Open Spotify";
+  if (track?.playback_source === "spotify-local") return "Open song";
   if (track?.source_url) return "Open track source";
   return "Spotify";
 }
@@ -705,17 +704,6 @@ async function refreshSetupStatus() {
   }
 }
 
-async function openSpotify() {
-  try {
-    const result = await fetchJson("/open-spotify", { method: "POST" });
-    setStatus(result.opened ? "Opening Spotify..." : "Spotify is already open.");
-    setTimeout(refreshSetupStatus, 900);
-    setTimeout(() => checkForSongChange(true), 1400);
-  } catch (error) {
-    setStatus(error.message);
-  }
-}
-
 async function playRecentSong(trackId) {
   if (!trackId) return;
   try {
@@ -880,12 +868,6 @@ fixSongEl.addEventListener("click", () => {
   checkForSongChange(true, true);
 });
 playToggleEl.addEventListener("click", togglePlayback);
-openSpotifyEls.forEach((element) => {
-  element.addEventListener("click", (event) => {
-    event.preventDefault();
-    openSpotify();
-  });
-});
 moreMenuEl.addEventListener("toggle", () => {
   if (moreMenuEl.open) loadRecentSongs();
 });

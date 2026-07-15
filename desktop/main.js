@@ -16,9 +16,9 @@ let mainWindow = null;
 let fitTimer = null;
 let activePort = BASE_PORT;
 const WIDGET_WIDTH = 430;
-const WIDGET_DEFAULT_HEIGHT = 620;
+const WIDGET_DEFAULT_HEIGHT = 500;
 const WIDGET_MIN_WIDTH = 360;
-const WIDGET_MIN_HEIGHT = 540;
+const WIDGET_MIN_HEIGHT = 420;
 const WIDGET_HEIGHT_PADDING = 8;
 
 function logStartup(message) {
@@ -40,7 +40,20 @@ async function fitWidgetWindowToContent() {
 
   try {
     const contentHeight = await mainWindow.webContents.executeJavaScript(
-      `Math.ceil(document.querySelector(".widget-shell")?.scrollHeight || document.body.scrollHeight || ${WIDGET_DEFAULT_HEIGHT})`,
+      `(() => {
+        const shell = document.querySelector(".widget-shell");
+        if (!shell) return ${WIDGET_DEFAULT_HEIGHT};
+        const shellTop = shell.getBoundingClientRect().top;
+        const visibleChildren = [...shell.children].filter((child) => {
+          const styles = window.getComputedStyle(child);
+          return styles.display !== "none" && styles.position !== "absolute";
+        });
+        const contentBottom = Math.max(
+          shell.getBoundingClientRect().top,
+          ...visibleChildren.map((child) => child.getBoundingClientRect().bottom),
+        );
+        return Math.ceil(contentBottom - shellTop);
+      })()`,
     );
     const display = screen.getDisplayMatching(mainWindow.getBounds());
     const maxHeight = Math.max(WIDGET_MIN_HEIGHT, display.workArea.height - 56);
